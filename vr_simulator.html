@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Math VR Simulator - Lobby</title>
+    <style>
+        /* Base styles for the "Virtual Space" */
+        body { margin: 0; background: #0c0c0c; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; overflow: hidden; }
+        .viewport { width: 900px; height: 500px; background: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2070') center/cover; border-radius: 60px; box-shadow: inset 0 0 150px rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; border: 8px solid #222; }
+        
+        /* 🏠 HUD Panel Styling */
+        .hud-panel { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px); border: 2px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 30px; width: 450px; text-align: center; }
+        
+        /* 🕹️ Menu Buttons */
+        .menu-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 15px; margin: 10px 0; border-radius: 12px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        .menu-btn:hover { background: #3498db; transform: scale(1.05); }
+        .exit-btn:hover { background: #e74c3c; }
+    </style>
+</head>
+<body>
+
+    <div class="viewport">
+        <div id="main-menu" class="hud-panel">
+            <h1>Brain Busters VR 🧠</h1>
+            <div class="menu-options">
+                <button class="menu-btn" onclick="switchView('topic-selection')">Start Test 🚀</button>
+                <button class="menu-btn" onclick="switchView('leaderboard')">Leaderboard 🏆</button>
+                <button class="menu-btn" onclick="switchView('settings')">Settings ⚙️</button>
+                <button class="menu-btn exit-btn" onclick="window.close()">Exit 🚪</button>
+            </div>
+        </div>
+
+        <div id="topic-selection" class="hud-panel" style="display:none;">
+            <h2>Select a Room</h2>
+            <button class="menu-btn" onclick="startQuiz('Arithmetic')">Arithmetic Room ➕</button>
+            <button class="menu-btn" onclick="startQuiz('Algebra')">Algebra Room 🔣</button>
+            <button class="menu-btn" onclick="switchView('main-menu')">Back 🏠</button>
+        </div>
+        
+        </div>
+
+    <script type="module">
+        import { db } from './firebase-config.js';
+
+        // Logic to switch between different HUD screens
+        window.switchView = function(viewId) {
+            // Hide all panels
+            const panels = document.querySelectorAll('.hud-panel');
+            panels.forEach(p => p.style.display = 'none');
+            
+            // Show the selected panel
+            document.getElementById(viewId).style.display = 'block';
+        };
+
+        window.startQuiz = function(topic) {
+            console.log("Starting quiz for:", topic);
+            // We will add the question-fetching logic here next!
+        };
+    </script>
+</body>
+</html>

@@ -1,92 +1,143 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Brain Busters Admin</title>
+    <title>Brain Busters Math Admin</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
-        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input, select, textarea { width: 100%; margin: 10px 0; padding: 8px; }
-        button { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f0f4f8; display: flex; gap: 20px; }
+        .column { flex: 1; }
+        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-left: 5px solid #3498db; padding-left: 15px; margin-bottom: 30px; }
+        h3 { margin-top: 0; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
+        input, select, textarea { width: 100%; margin: 8px 0; padding: 12px; border: 1px solid #d1d9e6; border-radius: 6px; box-sizing: border-box; }
+        button { background: #3498db; color: white; border: none; padding: 14px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        button:hover { background: #2980b9; }
+        
+        /* 📊 Mastery Table Styles */
+        .filter-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+        th { color: #7f8c8d; text-transform: uppercase; font-size: 11px; }
+        .rank-A { color: #27ae60; font-weight: bold; }
+        .rank-B { color: #f39c12; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>🧠 Brain Busters VR Admin</h1>
-    
-    <div class="card">
-        <h3>Update Lesson Content</h3>
-        <select id="subject">
-            <option value="Mathematics">Mathematics</option>
-            <option value="Science">Science</option>
-            <option value="Art">Art</option>
-        </select>
-        
-        <label>Lesson Instructions:</label>
-        <textarea id="instructions" placeholder="Enter lesson text here..."></textarea>
-        
-        <label>Game Difficulty:</label>
-        <select id="difficulty">
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-        </select>
-        
-        <button onclick="updateCloud()">Push Update to VR Game</button>
+    <div class="column">
+        <h1>🔢 Curriculum Manager</h1>
+        <div class="card">
+            <h3>Add Sub-concept Quiz</h3>
+            <label>Topic</label>
+            <select id="math-topic">
+                <option value="Arithmetic">Arithmetic</option>
+                <option value="Algebra">Algebra</option>
+                <option value="Geometry">Geometry</option>
+            </select>
+            <input type="text" id="sub-concept" placeholder="Sub-concept (e.g. Solving for X)">
+            <input type="text" id="question" placeholder="Question">
+            <input type="text" id="answer" placeholder="Correct Answer">
+            <div style="display: flex; gap: 5px;">
+                <input type="text" id="w1" placeholder="Wrong 1">
+                <input type="text" id="w2" placeholder="Wrong 2">
+                <input type="text" id="w3" placeholder="Wrong 3">
+            </div>
+            <textarea id="hint" rows="2" placeholder="💡 Hint for student..."></textarea>
+            <button onclick="addQuiz()" style="background: #27ae60;">Save to Cloud ☁️</button>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>Add Quiz Question</h3>
-        <input type="text" id="question" placeholder="Question text">
-        <input type="text" id="answer" placeholder="Correct Answer">
-        <button onclick="addQuiz()">Save Question</button>
+    <div class="column">
+        <h1>📊 Mastery Tracker</h1>
+        <div class="card">
+            <div class="filter-group">
+                <select id="filter-topic" onchange="loadScores()">
+                    <option value="All">All Topics</option>
+                    <option value="Arithmetic">Arithmetic</option>
+                    <option value="Algebra">Algebra</option>
+                    <option value="Geometry">Geometry</option>
+                </select>
+                <select id="sort-by" onchange="loadScores()">
+                    <option value="timestamp">Most Recent ⏱️</option>
+                    <option value="score">Highest Score 🏆</option>
+                </select>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Student</th>
+                        <th>Topic</th>
+                        <th>Score</th>
+                        <th>Rank</th>
+                    </tr>
+                </thead>
+                <tbody id="score-table"></tbody>
+            </table>
+        </div>
     </div>
 
-    <script>
-        function updateCloud() {
-            alert("This will connect to Firebase!");
-        }
-        function addQuiz() {
-            alert("Saving question to the cloud...");
-        }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        // 1. Import the Firebase libraries from the web
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+        // Use your existing config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqVvLUEd5rBgBzG6z-HZbWvVQKuMjaCko",
+            authDomain: "brainbustersvr.firebaseapp.com",
+            projectId: "brainbustersvr",
+            storageBucket: "brainbustersvr.firebasestorage.app",
+            messagingSenderId: "1026567086462",
+            appId: "1:1026567086462:web:c759a28744cf38aec3932f"
+        };
 
-// 2. Your web app's Firebase configuration
-// (You'll copy this from your Firebase Project Settings)
-  const firebaseConfig = {
-    apiKey: "AIzaSyAqVvLUEd5rBgBzG6z-HZbWvVQKuMjaCko",
-    authDomain: "brainbustersvr.firebaseapp.com",
-    projectId: "brainbustersvr",
-    storageBucket: "brainbustersvr.firebasestorage.app",
-    messagingSenderId: "1026567086462",
-    appId: "1:1026567086462:web:c759a28744cf38aec3932f",
-    measurementId: "G-427LEHKQKW"
-  };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-// 3. Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+        window.addQuiz = async function() {
+            const topic = document.getElementById('math-topic').value;
+            const sc = document.getElementById('sub-concept').value;
+            const ref = doc(db, "MathTopics", topic, "Quizzes", sc);
+            await setDoc(ref, { 
+                subConcept: sc, 
+                question: document.getElementById('question').value, 
+                answer: document.getElementById('answer').value,
+                wrongOptions: [document.getElementById('w1').value, document.getElementById('w2').value, document.getElementById('w3').value],
+                hint: document.getElementById('hint').value
+            });
+            alert("Question Saved!");
+        };
 
-// 4. Function to update Lesson Content
-async function updateCloud() {
-    const subject = document.getElementById('subject').value;
-    const instructions = document.getElementById('instructions').value;
-    const difficulty = document.getElementById('difficulty').value;
+        window.loadScores = async function() {
+            const table = document.getElementById('score-table');
+            const topicFilter = document.getElementById('filter-topic').value;
+            const sortField = document.getElementById('sort-by').value;
 
-    try {
-        // This saves the data to a document named after the subject (e.g., "Mathematics")
-        await setDoc(doc(db, "Subjects", subject), {
-            lessonInstructions: instructions,
-            difficulty: difficulty,
-            lastUpdated: new String(new Date())
-        });
-        alert(subject + " updated successfully! 🎉");
-    } catch (e) {
-        console.error("Error updating document: ", e);
-    }
-}
+            // Fetch and sort data
+            const q = query(collection(db, "StudentScores"), orderBy(sortField, "desc"));
+            const snap = await getDocs(q);
+            
+            table.innerHTML = "";
+            snap.forEach(d => {
+                const s = d.data();
+                if (topicFilter === "All" || s.topic === topicFilter) {
+                    // Format the timestamp for readability
+                    const dateStr = s.timestamp ? s.timestamp.toDate().toLocaleDateString() : "N/A";
+                    const timeStr = s.timestamp ? s.timestamp.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "";
+
+                    table.innerHTML += `
+                        <tr>
+                            <td style="font-size:11px; color:#666;">${dateStr}<br>${timeStr}</td>
+                            <td><strong>${s.studentName}</strong></td>
+                            <td>${s.topic}</td>
+                            <td>${s.score}</td>
+                            <td class="rank-${s.rank}">${s.rank}</td>
+                        </tr>
+                    `;
+                }
+            });
+        };
+
+        window.onload = loadScores;
     </script>
 </body>
 </html>
-
