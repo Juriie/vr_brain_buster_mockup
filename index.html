@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Brain Busters Admin</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input, select, textarea { width: 100%; margin: 10px 0; padding: 8px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🧠 Brain Busters VR Admin</h1>
+    
+    <div class="card">
+        <h3>Update Lesson Content</h3>
+        <select id="subject">
+            <option value="Mathematics">Mathematics</option>
+            <option value="Science">Science</option>
+            <option value="Art">Art</option>
+        </select>
+        
+        <label>Lesson Instructions:</label>
+        <textarea id="instructions" placeholder="Enter lesson text here..."></textarea>
+        
+        <label>Game Difficulty:</label>
+        <select id="difficulty">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+        
+        <button onclick="updateCloud()">Push Update to VR Game</button>
+    </div>
+
+    <div class="card">
+        <h3>Add Quiz Question</h3>
+        <input type="text" id="question" placeholder="Question text">
+        <input type="text" id="answer" placeholder="Correct Answer">
+        <button onclick="addQuiz()">Save Question</button>
+    </div>
+
+    <script>
+        function updateCloud() {
+            alert("This will connect to Firebase!");
+        }
+        function addQuiz() {
+            alert("Saving question to the cloud...");
+        }
+
+        // 1. Import the Firebase libraries from the web
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+
+// 2. Your web app's Firebase configuration
+// (You'll copy this from your Firebase Project Settings)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAqVvLUEd5rBgBzG6z-HZbWvVQKuMjaCko",
+    authDomain: "brainbustersvr.firebaseapp.com",
+    projectId: "brainbustersvr",
+    storageBucket: "brainbustersvr.firebasestorage.app",
+    messagingSenderId: "1026567086462",
+    appId: "1:1026567086462:web:c759a28744cf38aec3932f",
+    measurementId: "G-427LEHKQKW"
+  };
+
+// 3. Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 4. Function to update Lesson Content
+async function updateCloud() {
+    const subject = document.getElementById('subject').value;
+    const instructions = document.getElementById('instructions').value;
+    const difficulty = document.getElementById('difficulty').value;
+
+    try {
+        // This saves the data to a document named after the subject (e.g., "Mathematics")
+        await setDoc(doc(db, "Subjects", subject), {
+            lessonInstructions: instructions,
+            difficulty: difficulty,
+            lastUpdated: new String(new Date())
+        });
+        alert(subject + " updated successfully! 🎉");
+    } catch (e) {
+        console.error("Error updating document: ", e);
+    }
+}
+    </script>
+</body>
+</html>
+

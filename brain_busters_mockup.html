@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Brain Busters VR Mockup</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; display: flex; gap: 20px; padding: 20px; background: #eef2f3; }
+        .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex: 1; }
+        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        textarea, select, input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background: #3498db; color: white; border: none; padding: 12px; margin-top: 20px; width: 100%; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #2980b9; }
+        #vr-screen { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; min-height: 200px; border: 4px solid #34495e; }
+        .subject-tag { display: inline-block; background: #e74c3c; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="panel">
+        <h2>🖥️ Admin Dashboard</h2>
+        <p>Update game content without recompiling!</p>
+        
+        <label>Select Subject Area</label>
+        <select id="subject">
+            <option value="Mathematics">Mathematics</option>
+            <option value="Science">Science</option>
+            <option value="Art">Art</option>
+        </select>
+
+        <label>Lesson Instructions</label>
+        <textarea id="instructions" rows="4" placeholder="e.g., Solve the equations to open the door..."></textarea>
+
+        <label>Difficulty Setting</label>
+        <select id="difficulty">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+
+        <button onclick="saveToMockDatabase()">Push to Mock Database</button>
+    </div>
+
+    <div class="panel">
+        <h2>🥽 VR Game View (Simulated)</h2>
+        <p>The game fetches the latest content automatically.</p>
+        <div id="vr-screen">
+            <div id="subject-display" class="subject-tag">Subject: None</div>
+            <h3 id="difficulty-display">Difficulty: --</h3>
+            <hr>
+            <p id="instruction-display">Waiting for teacher updates...</p>
+        </div>
+        <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
+            *In a real setup, this data would come from the Cloud.*
+        </p>
+    </div>
+
+    <script>
+        // FUNCTION TO SAVE DATA (Like sending to a Cloud DB)
+        function saveToMockDatabase() {
+            const data = {
+                subject: document.getElementById('subject').value,
+                instructions: document.getElementById('instructions').value,
+                difficulty: document.getElementById('difficulty').value
+            };
+            
+            // Saving to localStorage (our temporary "Database")
+            localStorage.setItem('brainBustersData', JSON.stringify(data));
+            
+            alert("Data saved! The VR Game View will now update.");
+            loadFromMockDatabase();
+        }
+
+        // FUNCTION TO FETCH DATA (Like the VR game fetching from the Cloud)
+        function loadFromMockDatabase() {
+            const savedData = localStorage.getItem('brainBustersData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('subject-display').innerText = "Subject: " + data.subject;
+                document.getElementById('difficulty-display').innerText = "Difficulty: " + data.difficulty;
+                document.getElementById('instruction-display').innerText = data.instructions;
+            }
+        }
+
+        // Load data on start
+        window.onload = loadFromMockDatabase;
+    </script>
+
+</body>
+</html>
