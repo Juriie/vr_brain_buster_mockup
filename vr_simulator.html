@@ -2,60 +2,158 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Math VR Simulator - Lobby</title>
+    <title>Kindergarten Math VR</title>
     <style>
-        /* Base styles for the "Virtual Space" */
         body { margin: 0; background: #0c0c0c; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; overflow: hidden; }
-        .viewport { width: 900px; height: 500px; background: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2070') center/cover; border-radius: 60px; box-shadow: inset 0 0 150px rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; border: 8px solid #222; }
-        
-        /* 🏠 HUD Panel Styling */
-        .hud-panel { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px); border: 2px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 30px; width: 450px; text-align: center; }
-        
-        /* 🕹️ Menu Buttons */
-        .menu-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 15px; margin: 10px 0; border-radius: 12px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        .viewport { width: 900px; height: 500px; background: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2070') center/cover; border-radius: 60px; display: flex; justify-content: center; align-items: center; border: 8px solid #222; position: relative; }
+        .hud-panel { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(15px); border: 2px solid rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 30px; width: 500px; text-align: center; }
+        .menu-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 12px; margin: 8px 0; border-radius: 12px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.3s; }
         .menu-btn:hover { background: #3498db; transform: scale(1.05); }
-        .exit-btn:hover { background: #e74c3c; }
+        .quiz-option { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 15px; margin: 8px 0; border-radius: 10px; cursor: pointer; width: 100%; font-size: 20px; }
+        #timer-display { color: #f1c40f; font-weight: bold; font-family: monospace; }
+        .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 20px; overflow: hidden; }
     </style>
 </head>
 <body>
-
     <div class="viewport">
-        <div id="main-menu" class="hud-panel">
+        <div id="view-menu" class="hud-panel">
             <h1>Brain Busters VR 🧠</h1>
-            <div class="menu-options">
-                <button class="menu-btn" onclick="switchView('topic-selection')">Start Test 🚀</button>
-                <button class="menu-btn" onclick="switchView('leaderboard')">Leaderboard 🏆</button>
-                <button class="menu-btn" onclick="switchView('settings')">Settings ⚙️</button>
-                <button class="menu-btn exit-btn" onclick="window.close()">Exit 🚪</button>
-            </div>
+            <button class="menu-btn" onclick="switchView('view-topics')">Start Math 🚀</button>
+            <button class="menu-btn" onclick="switchView('view-leaderboard')">Leaderboard 🏆</button>
+            <button class="menu-btn" onclick="switchView('view-settings')">Settings ⚙️</button>
         </div>
 
-        <div id="topic-selection" class="hud-panel" style="display:none;">
-            <h2>Select a Room</h2>
-            <button class="menu-btn" onclick="startQuiz('Arithmetic')">Arithmetic Room ➕</button>
-            <button class="menu-btn" onclick="startQuiz('Algebra')">Algebra Room 🔣</button>
-            <button class="menu-btn" onclick="switchView('main-menu')">Back 🏠</button>
+        <div id="view-settings" class="hud-panel" style="display:none;">
+            <h2>User Settings</h2>
+            <input type="text" id="player-name" placeholder="Enter Name" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px;">
+            <button class="menu-btn" onclick="switchView('view-menu')">Save 🏠</button>
         </div>
-        
+
+        <div id="view-topics" class="hud-panel" style="display:none;">
+            <h2>Choose Your Challenge</h2>
+            <div style="margin-bottom: 20px;">
+                <p>Addition ➕</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="menu-btn" onclick="enterMathRoom('Addition', 'Easy')" style="background:#27ae60;">Easy 🟢</button>
+                    <button class="menu-btn" onclick="enterMathRoom('Addition', 'Hard')" style="background:#c0392b;">Hard 🔴</button>
+                </div>
+            </div>
+            <button class="menu-btn" onclick="switchView('view-menu')">Back 🏠</button>
         </div>
+
+        <div id="view-game" class="hud-panel" style="display:none;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <div id="timer-display">00:00</div>
+                <div id="display-score">Score: 0</div>
+            </div>
+            <h2 id="display-question">Loading...</h2>
+            <div id="options-container"></div>
+            <div id="hint-display" style="display:none; color:#f1c40f; font-style:italic; margin-top:10px;"></div>
+            <div class="progress-bar"><div id="prog-fill" style="width:0%; height:100%; background:#3498db; transition: 0.5s;"></div></div>
+        </div>
+
+        <div id="view-summary" class="hud-panel" style="display:none;">
+            <h2>Excellent Effort! 🌟</h2>
+            <p>Score: <span id="final-score">0</span></p>
+            <button class="menu-btn" onclick="switchView('view-menu')">Back to Menu 🏠</button>
+        </div>
+
+        <div id="view-leaderboard" class="hud-panel" style="display:none;">
+            <h2>Leaderboard 🏆</h2>
+            <div id="leaderboard-list" style="max-height:200px; overflow-y:auto; text-align:left; padding:10px;"></div>
+            <button class="menu-btn" onclick="switchView('view-menu')">Back 🏠</button>
+        </div>
+    </div>
 
     <script type="module">
         import { db } from './firebase-config.js';
+        import { collection, getDocs, query, where, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        // Logic to switch between different HUD screens
-        window.switchView = function(viewId) {
-            // Hide all panels
-            const panels = document.querySelectorAll('.hud-panel');
-            panels.forEach(p => p.style.display = 'none');
+        let subConcepts = [], currentIdx = 0, score = 0, seconds = 0, timer, currentTopic = "";
+
+        window.switchView = function(id) {
+            document.querySelectorAll('.hud-panel').forEach(p => p.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            if(id === 'view-leaderboard') loadLeaderboard();
+        };
+
+        window.enterMathRoom = async function(topic, level) {
+            const name = document.getElementById('player-name').value;
+            if(!name) { alert("Enter your name in Settings first!"); switchView('view-settings'); return; }
+            currentTopic = topic; currentIdx = 0; score = 0; seconds = 0;
+            switchView('view-game');
+
+            const q = query(collection(db, "MathTopics", topic, "Quizzes"), where("difficulty", "==", level));
+            const snap = await getDocs(q);
+            subConcepts = snap.docs.map(d => d.data());
             
-            // Show the selected panel
-            document.getElementById(viewId).style.display = 'block';
+            if (subConcepts.length > 0) { startTimer(); showQuestion(); }
+            else { alert("No " + level + " questions yet!"); switchView('view-topics'); }
         };
 
-        window.startQuiz = function(topic) {
-            console.log("Starting quiz for:", topic);
-            // We will add the question-fetching logic here next!
-        };
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                seconds++;
+                let m = Math.floor(seconds/60).toString().padStart(2,'0');
+                let s = (seconds%60).toString().padStart(2,'0');
+                document.getElementById('timer-display').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function showQuestion() {
+            const sc = subConcepts[currentIdx];
+            document.getElementById('display-question').innerText = sc.question;
+            document.getElementById('prog-fill').style.width = (currentIdx / subConcepts.length * 100) + "%";
+            document.getElementById('hint-display').style.display = "none";
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            let choices = [sc.answer, ...sc.wrongOptions].sort(() => Math.random() - 0.5);
+            choices.forEach(c => {
+                const b = document.createElement('button');
+                b.className = "quiz-option";
+                b.innerText = c;
+                b.onclick = () => check(c, sc.answer, b, sc.hint);
+                container.appendChild(b);
+            });
+        }
+
+        async function check(sel, cor, btn, hint) {
+            if (sel === cor) {
+                btn.style.background = "#27ae60";
+                score += 10;
+                document.getElementById('display-score').innerText = "Score: " + score;
+                setTimeout(async () => {
+                    currentIdx++;
+                    if (currentIdx < subConcepts.length) showQuestion();
+                    else await finishGame();
+                }, 800);
+            } else {
+                btn.style.background = "#c0392b";
+                document.getElementById('hint-display').innerText = "💡 " + (hint || "Try again!");
+                document.getElementById('hint-display').style.display = "block";
+            }
+        }
+
+        async function finishGame() {
+            clearInterval(timer);
+            await addDoc(collection(db, "StudentScores"), {
+                studentName: document.getElementById('player-name').value,
+                topic: currentTopic, score: score, rank: score >= 20 ? "A" : "B", timestamp: new Date()
+            });
+            document.getElementById('final-score').innerText = score;
+            switchView('view-summary');
+        }
+
+        async function loadLeaderboard() {
+            const list = document.getElementById('leaderboard-list');
+            const snap = await getDocs(query(collection(db, "StudentScores"), orderBy("score", "desc")));
+            list.innerHTML = "";
+            snap.forEach(d => {
+                const s = d.data();
+                list.innerHTML += `<div style="border-bottom:1px solid #444; padding:8px;">⭐ ${s.studentName}: ${s.score} (${s.topic})</div>`;
+            });
+        }
     </script>
 </body>
 </html>

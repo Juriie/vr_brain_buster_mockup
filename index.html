@@ -6,42 +6,34 @@
         body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f0f4f8; display: flex; gap: 20px; }
         .column { flex: 1; }
         .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; border-left: 5px solid #3498db; padding-left: 15px; margin-bottom: 30px; }
-        h3 { margin-top: 0; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
+        h1 { color: #2c3e50; border-left: 5px solid #3498db; padding-left: 15px; margin-bottom: 20px; }
         input, select, textarea { width: 100%; margin: 8px 0; padding: 12px; border: 1px solid #d1d9e6; border-radius: 6px; box-sizing: border-box; }
-        button { background: #3498db; color: white; border: none; padding: 14px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #2980b9; }
-        
-        /* 📊 Mastery Table Styles */
-        .filter-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        button { background: #3498db; color: white; border: none; padding: 14px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
         th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
-        th { color: #7f8c8d; text-transform: uppercase; font-size: 11px; }
-        .rank-A { color: #27ae60; font-weight: bold; }
-        .rank-B { color: #f39c12; font-weight: bold; }
+        .top-score { background: rgba(241, 196, 15, 0.15) !important; font-weight: bold; border-left: 4px solid #f1c40f; }
     </style>
 </head>
 <body>
     <div class="column">
-        <h1>🔢 Curriculum Manager</h1>
+        <h1>🔢 Curriculum</h1>
         <div class="card">
-            <h3>Add Sub-concept Quiz</h3>
-            <label>Topic</label>
+            <h3>Add Kindergarten Quiz</h3>
             <select id="math-topic">
-                <option value="Arithmetic">Arithmetic</option>
-                <option value="Algebra">Algebra</option>
-                <option value="Geometry">Geometry</option>
+                <option value="Addition">Addition ➕</option>
+                <option value="Subtraction">Subtraction ➖</option>
             </select>
-            <input type="text" id="sub-concept" placeholder="Sub-concept (e.g. Solving for X)">
-            <input type="text" id="question" placeholder="Question">
+            <select id="quiz-difficulty">
+                <option value="Easy">Easy (0-5) 🟢</option>
+                <option value="Hard">Hard (0-10) 🔴</option>
+            </select>
+            <input type="text" id="sub-concept" placeholder="Concept Name (e.g., Adding 1s)">
+            <input type="text" id="question" placeholder="Question (e.g., 2 + 1 = ?)">
             <input type="text" id="answer" placeholder="Correct Answer">
             <div style="display: flex; gap: 5px;">
-                <input type="text" id="w1" placeholder="Wrong 1">
-                <input type="text" id="w2" placeholder="Wrong 2">
-                <input type="text" id="w3" placeholder="Wrong 3">
+                <input type="text" id="w1" placeholder="Wrong 1"><input type="text" id="w2" placeholder="Wrong 2"><input type="text" id="w3" placeholder="Wrong 3">
             </div>
-            <textarea id="hint" rows="2" placeholder="💡 Hint for student..."></textarea>
+            <textarea id="hint" placeholder="💡 Hint..."></textarea>
             <button onclick="addQuiz()" style="background: #27ae60;">Save to Cloud ☁️</button>
         </div>
     </div>
@@ -49,57 +41,30 @@
     <div class="column">
         <h1>📊 Mastery Tracker</h1>
         <div class="card">
-            <div class="filter-group">
-                <select id="filter-topic" onchange="loadScores()">
-                    <option value="All">All Topics</option>
-                    <option value="Arithmetic">Arithmetic</option>
-                    <option value="Algebra">Algebra</option>
-                    <option value="Geometry">Geometry</option>
-                </select>
+            <div style="display:flex; gap:10px;">
                 <select id="sort-by" onchange="loadScores()">
                     <option value="timestamp">Most Recent ⏱️</option>
                     <option value="score">Highest Score 🏆</option>
                 </select>
             </div>
             <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Student</th>
-                        <th>Topic</th>
-                        <th>Score</th>
-                        <th>Rank</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Student</th><th>Topic</th><th>Score</th><th>Rank</th></tr></thead>
                 <tbody id="score-table"></tbody>
             </table>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-        // Use your existing config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAqVvLUEd5rBgBzG6z-HZbWvVQKuMjaCko",
-            authDomain: "brainbustersvr.firebaseapp.com",
-            projectId: "brainbustersvr",
-            storageBucket: "brainbustersvr.firebasestorage.app",
-            messagingSenderId: "1026567086462",
-            appId: "1:1026567086462:web:c759a28744cf38aec3932f"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        import { db } from './firebase-config.js';
+        import { doc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
         window.addQuiz = async function() {
             const topic = document.getElementById('math-topic').value;
             const sc = document.getElementById('sub-concept').value;
-            const ref = doc(db, "MathTopics", topic, "Quizzes", sc);
-            await setDoc(ref, { 
-                subConcept: sc, 
-                question: document.getElementById('question').value, 
+            await setDoc(doc(db, "MathTopics", topic, "Quizzes", sc), {
+                subConcept: sc,
+                difficulty: document.getElementById('quiz-difficulty').value,
+                question: document.getElementById('question').value,
                 answer: document.getElementById('answer').value,
                 wrongOptions: [document.getElementById('w1').value, document.getElementById('w2').value, document.getElementById('w3').value],
                 hint: document.getElementById('hint').value
@@ -109,34 +74,21 @@
 
         window.loadScores = async function() {
             const table = document.getElementById('score-table');
-            const topicFilter = document.getElementById('filter-topic').value;
-            const sortField = document.getElementById('sort-by').value;
-
-            // Fetch and sort data
-            const q = query(collection(db, "StudentScores"), orderBy(sortField, "desc"));
-            const snap = await getDocs(q);
-            
-            table.innerHTML = "";
+            const snap = await getDocs(query(collection(db, "StudentScores"), orderBy(document.getElementById('sort-by').value, "desc")));
+            let maxScores = {};
+            let scoresData = [];
             snap.forEach(d => {
-                const s = d.data();
-                if (topicFilter === "All" || s.topic === topicFilter) {
-                    // Format the timestamp for readability
-                    const dateStr = s.timestamp ? s.timestamp.toDate().toLocaleDateString() : "N/A";
-                    const timeStr = s.timestamp ? s.timestamp.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "";
-
-                    table.innerHTML += `
-                        <tr>
-                            <td style="font-size:11px; color:#666;">${dateStr}<br>${timeStr}</td>
-                            <td><strong>${s.studentName}</strong></td>
-                            <td>${s.topic}</td>
-                            <td>${s.score}</td>
-                            <td class="rank-${s.rank}">${s.rank}</td>
-                        </tr>
-                    `;
-                }
+                let s = d.data();
+                scoresData.push(s);
+                let key = s.studentName + s.topic;
+                if(!maxScores[key] || s.score > maxScores[key]) maxScores[key] = s.score;
+            });
+            table.innerHTML = "";
+            scoresData.forEach(s => {
+                let isTop = s.score === maxScores[s.studentName + s.topic];
+                table.innerHTML += `<tr class="${isTop ? 'top-score' : ''}"><td>${isTop ? '⭐ ' : ''}${s.studentName}</td><td>${s.topic}</td><td>${s.score}</td><td>${s.rank}</td></tr>`;
             });
         };
-
         window.onload = loadScores;
     </script>
 </body>
