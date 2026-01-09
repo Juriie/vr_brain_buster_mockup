@@ -3,134 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <title>Kindergarten Math VR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #0c0c0c; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; overflow: hidden; perspective: 1000px; }
+        body { 
+            margin: 0; background: #050505; font-family: 'Fredoka', sans-serif; 
+            display: flex; align-items: center; justify-content: center; 
+            height: 100vh; color: white; overflow: hidden; perspective: 1200px; 
+        }
+
         .viewport { 
-            width: 900px; height: 500px; 
-            background: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2070') center/cover; 
-            border-radius: 60px; display: flex; justify-content: center; align-items: center; 
-            border: 8px solid #222; position: relative; 
-            transition: transform 0.1s ease-out;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5) inset;
+            width: 950px; height: 550px; 
+            /* Default Background (Space) */
+            background: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2070') center/cover;
+            border-radius: 40px; display: flex; justify-content: center; align-items: center; 
+            border: 10px solid #333; position: relative; 
+            transition: background 0.5s ease-in-out, transform 0.1s ease-out, box-shadow 0.3s;
+            box-shadow: 0 0 80px rgba(0,0,0,0.8) inset;
             overflow: hidden; 
         }
-        .hud-panel { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(15px); border: 2px solid rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 30px; width: 500px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform-style: preserve-3d; z-index: 10; max-height: 450px; overflow-y: auto; }
-        .menu-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 12px; margin: 8px 0; border-radius: 12px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.2s; }
-        .menu-btn:hover { background: #3498db; transform: scale(1.05) translateZ(10px); }
-        .quiz-option { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 15px; margin: 8px 0; border-radius: 10px; cursor: pointer; width: 100%; font-size: 20px; transition: 0.2s; position: relative; }
-        .quiz-option:hover { background: rgba(255, 255, 255, 0.25); transform: scale(1.02); }
-        .q-img { max-width: 200px; max-height: 150px; border-radius: 10px; margin: 10px auto; display: block; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .speak-btn { background: none; border: none; font-size: 24px; cursor: pointer; vertical-align: middle; transition: transform 0.2s; }
-        .speak-btn:hover { transform: scale(1.2); }
-        #timer-display { color: #f1c40f; font-weight: bold; font-family: monospace; font-size: 24px; }
-        .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 20px; overflow: hidden; }
-        .error-msg { color: #e74c3c; background: rgba(231, 76, 60, 0.1); border: 1px solid #e74c3c; padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom: 15px; display: none; }
-        .name-input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: none; text-align: center; font-size: 18px; box-sizing: border-box; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-30px); } }
-        .score-popup { position: absolute; font-weight: bold; font-size: 24px; animation: floatUp 1s forwards; pointer-events: none; }
-        .star { font-size: 60px; display: inline-block; transition: transform 0.3s; opacity: 0.2; color: #555; }
-        .star.earned { color: #f1c40f; opacity: 1; transform: scale(1.2); text-shadow: 0 0 20px #f1c40f; }
+
+        /* 🆕 Combo Glow Effects */
+        .viewport.combo-x2 { box-shadow: 0 0 50px rgba(230, 126, 34, 0.6) inset; border-color: #d35400; }
+        .viewport.combo-x3 { box-shadow: 0 0 80px rgba(231, 76, 60, 0.9) inset; border-color: #c0392b; animation: pulseRed 1s infinite; }
+        
+        @keyframes pulseRed { 0% { border-color: #c0392b; } 50% { border-color: #f1c40f; } 100% { border-color: #c0392b; } }
+
+        .hud-panel { 
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2); padding: 40px; border-radius: 30px; width: 550px; text-align: center; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform-style: preserve-3d; z-index: 10; 
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 480px; overflow-y: auto;
+        }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.8) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        .menu-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 15px; margin: 10px 0; border-radius: 15px; cursor: pointer; width: 100%; font-size: 18px; font-weight: 600; font-family: 'Fredoka', sans-serif; transition: all 0.3s ease; }
+        .menu-btn:hover { background: linear-gradient(135deg, rgba(52, 152, 219, 0.4), rgba(52, 152, 219, 0.2)); transform: translateY(-3px) scale(1.02); }
+        
+        .quiz-option { background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.1); color: white; padding: 15px; margin: 10px 5px; border-radius: 15px; cursor: pointer; width: 45%; font-size: 22px; font-family: 'Fredoka', sans-serif; transition: all 0.2s; display: inline-block; }
+        .quiz-option:hover { background: rgba(255, 255, 255, 0.25); transform: scale(1.05); }
+        .q-img { max-width: 250px; max-height: 180px; border-radius: 15px; margin: 15px auto; display: block; border: 4px solid white; box-shadow: 0 8px 25px rgba(0,0,0,0.4); transform: rotate(-2deg); transition: transform 0.3s; }
+        .speak-btn { background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; border: none; font-size: 20px; cursor: pointer; vertical-align: middle; transition: transform 0.2s; display: inline-flex; align-items: center; justify-content: center; margin-left: 10px;}
+        .speak-btn:hover { background: #f1c40f; transform: scale(1.1) rotate(10deg); color: #000; }
+        
+        #timer-display { color: #f1c40f; font-weight: bold; font-family: monospace; font-size: 28px; }
+        .progress-bar { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 25px; overflow: hidden; }
+        #prog-fill { height: 100%; background: linear-gradient(90deg, #3498db, #2ecc71); transition: width 0.5s; }
+        .error-msg { color: #ff6b6b; background: rgba(255, 107, 107, 0.15); border: 1px solid #ff6b6b; padding: 12px; border-radius: 10px; font-size: 14px; margin-bottom: 15px; display: none; }
+        .name-input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white; text-align: center; font-size: 20px; font-family: 'Fredoka', sans-serif; }
+        
+        /* 🆕 Combo Badge */
+        #combo-badge { 
+            position: absolute; top: 20px; right: 20px; 
+            font-size: 24px; font-weight: bold; 
+            background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px;
+            border: 2px solid #f39c12; color: #f1c40f;
+            display: none; animation: popIn 0.3s;
+            z-index: 20;
+        }
+
+        .review-card { background: rgba(0, 0, 0, 0.4); border-radius: 12px; padding: 15px; margin: 10px 0; text-align: left; border-left: 5px solid #e74c3c; }
+        .star { font-size: 70px; display: inline-block; transition: transform 0.4s; opacity: 0.3; color: #444; filter: grayscale(1); }
+        .star.earned { color: #f1c40f; opacity: 1; transform: scale(1.2); filter: grayscale(0) drop-shadow(0 0 15px #f1c40f); }
         #confetti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        .review-card { background: rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px; margin: 10px 0; text-align: left; border-left: 4px solid #e74c3c; }
-        .review-q { font-weight: bold; font-size: 14px; color: #ecf0f1; }
-        .review-ans { font-size: 13px; margin-top: 5px; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
+        .score-popup { position: absolute; font-weight: 800; font-size: 32px; animation: floatUp 0.8s forwards; pointer-events: none; text-shadow: 0 2px 10px rgba(0,0,0,0.5); z-index: 20; }
     </style>
 </head>
 <body>
     <div class="viewport" id="game-viewport">
+        <div id="combo-badge">🔥 Streak: 0</div>
+        
+        <div id="particles-container"></div>
         <canvas id="confetti-canvas"></canvas>
 
         <div id="view-menu" class="hud-panel">
-            <h1>Brain Busters VR 🧠</h1>
+            <h1 style="font-size: 48px; margin-bottom: 10px;">🧠 Brain Busters VR</h1>
+            <p style="color: #bdc3c7;">Ready to learn, explorer?</p>
             <div id="menu-error" class="error-msg"></div>
-            <button class="menu-btn" onclick="startMathFlow()">Start Math 🚀</button>
-            <button class="menu-btn" onclick="switchView('view-leaderboard')">Leaderboard 🏆</button>
-            <button class="menu-btn" onclick="switchView('view-settings')">Settings ⚙️</button>
+            <button class="menu-btn" onclick="startMathFlow()">🚀 Start Mission</button>
+            <button class="menu-btn" onclick="switchView('view-leaderboard')">🏆 Hall of Fame</button>
+            <button class="menu-btn" onclick="switchView('view-settings')">⚙️ Gear Setup</button>
         </div>
 
         <div id="view-login" class="hud-panel" style="display:none;">
-            <h2>Welcome! 👋</h2>
-            <p style="margin-bottom: 20px; color: #ccc;">What should we call you?</p>
-            <div id="login-error" class="error-msg"></div>
-            <input type="text" id="intro-name" class="name-input" placeholder="Type your name here...">
-            <button class="menu-btn" onclick="submitName()" style="background: #27ae60;">Continue ➡️</button>
+            <h2>👋 Welcome Aboard!</h2>
+            <input type="text" id="intro-name" class="name-input" placeholder="Your Name Here">
+            <button class="menu-btn" onclick="submitName()">✅ Lets Go!</button>
             <button class="menu-btn" onclick="switchView('view-menu')">Back</button>
         </div>
 
         <div id="view-settings" class="hud-panel" style="display:none;">
-            <h2>User Settings</h2>
-            <label style="display:block; text-align:left; margin-bottom:5px;">Edit Name:</label>
-            <input type="text" id="player-name" class="name-input" placeholder="Enter Student Name">
+            <h2>⚙️ System Setup</h2>
+            <label style="display:block; text-align:left;">Pilot Name:</label>
+            <input type="text" id="player-name" class="name-input" placeholder="Name">
             <label style="display:block; text-align:left;">SFX Volume 🔊</label>
-            <input type="range" id="sfx-vol" min="0" max="100" value="70" onchange="testSfx()" style="width:100%; margin-bottom:15px;">
-            <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:rgba(255,255,255,0.1); padding:10px; border-radius:8px;">
-                <span>Auto-Read Questions 🗣️</span>
-                <input type="checkbox" id="auto-read" checked style="transform:scale(1.5);">
+            <input type="range" id="sfx-vol" min="0" max="100" value="70" onchange="testSfx()" style="width:100%;">
+            <label style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
+                <span>🗣️ Auto-Read</span> <input type="checkbox" id="auto-read" checked style="transform:scale(1.5);">
             </label>
-            <button class="menu-btn" onclick="saveSettings()">Save & Return 🏠</button>
+            <button class="menu-btn" onclick="saveSettings()">💾 Save Config</button>
         </div>
 
         <div id="view-topics" class="hud-panel" style="display:none;">
-            <h2>Choose Topic</h2>
-            <div id="topic-error" class="error-msg"></div>
-            <div style="margin-bottom: 15px;">
-                <label>Addition ➕</label>
-                <div style="display: flex; gap: 10px; margin-top:5px;">
-                    <button class="menu-btn" onclick="enterMathRoom('Addition', 'Easy')" style="background:#27ae60;">Easy 🟢</button>
-                    <button class="menu-btn" onclick="enterMathRoom('Addition', 'Hard')" style="background:#c0392b;">Hard 🔴</button>
+            <h2>🚀 Select Mission</h2>
+            <div style="margin-bottom: 20px;">
+                <label>➕ Addition (Underwater)</label>
+                <div style="display:flex; gap:10px;">
+                    <button class="menu-btn" onclick="enterMathRoom('Addition', 'Easy')" style="background:#27ae60;">Easy</button>
+                    <button class="menu-btn" onclick="enterMathRoom('Addition', 'Hard')" style="background:#c0392b;">Hard</button>
                 </div>
             </div>
-            <div style="margin-bottom: 15px;">
-                <label>Subtraction ➖</label>
-                <div style="display: flex; gap: 10px; margin-top:5px;">
-                    <button class="menu-btn" onclick="enterMathRoom('Subtraction', 'Easy')" style="background:#27ae60;">Easy 🟢</button>
-                    <button class="menu-btn" onclick="enterMathRoom('Subtraction', 'Hard')" style="background:#c0392b;">Hard 🔴</button>
+            <div style="margin-bottom: 20px;">
+                <label>➖ Subtraction (Jungle)</label>
+                <div style="display:flex; gap:10px;">
+                    <button class="menu-btn" onclick="enterMathRoom('Subtraction', 'Easy')" style="background:#27ae60;">Easy</button>
+                    <button class="menu-btn" onclick="enterMathRoom('Subtraction', 'Hard')" style="background:#c0392b;">Hard</button>
                 </div>
             </div>
-            <div style="margin-bottom: 15px;">
-                <label>Geometry 📐</label>
-                <div style="display: flex; gap: 10px; margin-top:5px;">
-                    <button class="menu-btn" onclick="enterMathRoom('Geometry', 'Easy')" style="background:#27ae60;">Easy 🟢</button>
-                    <button class="menu-btn" onclick="enterMathRoom('Geometry', 'Hard')" style="background:#c0392b;">Hard 🔴</button>
+            <div style="margin-bottom: 20px;">
+                <label>📐 Geometry (Space)</label>
+                <div style="display:flex; gap:10px;">
+                    <button class="menu-btn" onclick="enterMathRoom('Geometry', 'Easy')" style="background:#27ae60;">Easy</button>
+                    <button class="menu-btn" onclick="enterMathRoom('Geometry', 'Hard')" style="background:#c0392b;">Hard</button>
                 </div>
             </div>
-            <button class="menu-btn" onclick="switchView('view-menu')">Back 🏠</button>
+            <button class="menu-btn" onclick="switchView('view-menu')">🏠 Base</button>
         </div>
 
         <div id="view-game" class="hud-panel" style="display:none;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
                 <div id="timer-display">00:00</div>
-                <div id="display-score" style="font-weight:bold; color:#2ecc71;">Score: 0</div>
+                <div id="display-score">Score: 0</div>
             </div>
             <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
-                <h2 id="display-question" style="margin:0;">Loading...</h2>
+                <h2 id="display-question" style="margin:0; font-size:32px;">Loading...</h2>
                 <button class="speak-btn" onclick="speakCurrentQuestion()">🔊</button>
             </div>
             <div id="img-container"></div>
-            <div id="options-container" style="position:relative;"></div>
-            <div id="hint-display" style="display:none; color:#f1c40f; font-style:italic; margin-top:10px;"></div>
-            <div class="progress-bar"><div id="prog-fill" style="width:0%; height:100%; background:#3498db; transition: 0.5s;"></div></div>
-            <button class="menu-btn" style="margin-top:20px; background:rgba(255,0,0,0.3);" onclick="switchView('view-topics')">Quit 🏳️</button>
+            <div id="options-container" style="position:relative; margin-top:20px;"></div>
+            <div id="hint-display" style="display:none; color:#f1c40f; font-style:italic; margin-top:15px;"></div>
+            <div class="progress-bar"><div id="prog-fill" style="width:0%;"></div></div>
+            <button class="menu-btn" style="margin-top:25px; background:rgba(231,76,60,0.5);" onclick="switchView('view-topics')">🏳️ Abort</button>
         </div>
 
         <div id="view-summary" class="hud-panel" style="display:none;">
-            <h2 id="end-title">Excellent Effort! 🌟</h2>
-            <div id="star-container" style="margin: 10px 0;">
-                <span class="star" id="star1">★</span><span class="star" id="star2">★</span><span class="star" id="star3">★</span>
-            </div>
+            <h2 id="end-title">Mission Complete! 🌟</h2>
+            <div id="star-container" style="margin: 20px 0;"><span class="star" id="star1">★</span><span class="star" id="star2">★</span><span class="star" id="star3">★</span></div>
             <h1>Score: <span id="final-score" style="color:#2ecc71;">0</span></h1>
-            <p id="rank-display" style="font-size:18px; color:#ccc; margin-bottom: 15px;"></p>
-            <div id="mistake-review" style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; display: none;">
-                <h3 style="color: #f1c40f;">Review Mistakes 📝</h3>
-                <div id="mistake-list" style="max-height: 150px; overflow-y: auto;"></div>
+            <p id="rank-display"></p>
+            <div id="mistake-review" style="border-top:1px solid #555; padding-top:15px; display:none;">
+                <h3 style="color:#f1c40f;">🔍 Debrief</h3>
+                <div id="mistake-list" style="max-height:150px; overflow-y:auto;"></div>
             </div>
-            <button class="menu-btn" onclick="switchView('view-menu')">Back to Menu 🏠</button>
+            <button class="menu-btn" onclick="switchView('view-menu')">🏠 Return</button>
         </div>
 
         <div id="view-leaderboard" class="hud-panel" style="display:none;">
-            <h2>Leaderboard 🏆</h2>
-            <div id="leaderboard-list" style="max-height:200px; overflow-y:auto; text-align:left; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px;">Loading...</div>
-            <button class="menu-btn" onclick="switchView('view-menu')">Back 🏠</button>
+            <h2>🏆 Hall of Fame</h2>
+            <div id="leaderboard-list" style="max-height:350px; overflow-y:auto; text-align:left; padding:15px;">Loading...</div>
+            <button class="menu-btn" onclick="switchView('view-menu')">🏠 Back</button>
         </div>
     </div>
 
@@ -138,7 +169,7 @@
         import { db } from './firebase-config.js';
         import { collection, getDocs, query, where, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        // AUDIO, SPEECH, CONFETTI, PARALLAX (Same as before)
+        // AUDIO & SPEECH
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, duration, volFactor) {
             if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -148,29 +179,44 @@
             gainNode.gain.setValueAtTime(volume, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
             osc.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
-        window.sfx = { click: () => playTone(600, 'sine', 0.1, 0.3), correct: () => { playTone(600, 'sine', 0.1, 0.5); setTimeout(() => playTone(1200, 'sine', 0.3, 0.5), 100); }, wrong: () => { playTone(200, 'sawtooth', 0.3, 0.4); setTimeout(() => playTone(150, 'sawtooth', 0.4, 0.4), 200); }, win: () => { playTone(400, 'square', 0.2, 0.3); setTimeout(() => playTone(500, 'square', 0.2, 0.3), 200); setTimeout(() => playTone(600, 'square', 0.4, 0.3), 400); setTimeout(() => playTone(800, 'square', 0.8, 0.3), 600); } };
+        window.sfx = { 
+            click: () => playTone(600, 'sine', 0.1, 0.3), 
+            correct: () => { playTone(600, 'sine', 0.1, 0.5); setTimeout(() => playTone(1200, 'sine', 0.3, 0.5), 100); }, 
+            wrong: () => { playTone(150, 'sawtooth', 0.4, 0.4); setTimeout(() => playTone(100, 'sawtooth', 0.4, 0.4), 200); }, 
+            win: () => { playTone(400, 'square', 0.2, 0.3); setTimeout(() => playTone(500, 'square', 0.2, 0.3), 200); setTimeout(() => playTone(600, 'square', 0.4, 0.3), 400); },
+            // 🆕 New Sound for Combo Loss
+            fizz: () => { playTone(100, 'sawtooth', 0.5, 0.5); }
+        };
         window.testSfx = function() { window.sfx.correct(); };
 
         const synth = window.speechSynthesis; let voices = []; function loadVoices() { voices = synth.getVoices(); } loadVoices(); if (speechSynthesis.onvoiceschanged !== undefined) { speechSynthesis.onvoiceschanged = loadVoices; }
         window.speak = function(text) { if (synth.speaking) synth.cancel(); const utter = new SpeechSynthesisUtterance(text); const friendlyVoice = voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha")); if (friendlyVoice) utter.voice = friendlyVoice; utter.rate = 0.9; utter.pitch = 1.1; synth.speak(utter); };
         window.speakCurrentQuestion = function() { const txt = document.getElementById('display-question').innerText; if(txt && txt !== "Loading...") window.speak(txt); };
 
-        const canvas = document.getElementById('confetti-canvas'); const ctx = canvas.getContext('2d'); canvas.width = 900; canvas.height = 500; let particles = [];
-        function startConfetti() { particles = []; for(let i=0; i<100; i++) { particles.push({ x: canvas.width/2, y: canvas.height/2, vx: (Math.random()-0.5)*15, vy: (Math.random()-1)*15, color: `hsl(${Math.random()*360}, 100%, 50%)`, size: Math.random()*8+4, life: 100 }); } updateConfetti(); }
+        const canvas = document.getElementById('confetti-canvas'); const ctx = canvas.getContext('2d'); canvas.width = 950; canvas.height = 550; let particles = [];
+        function startConfetti() { particles = []; for(let i=0; i<120; i++) { particles.push({ x: canvas.width/2, y: canvas.height/2, vx: (Math.random()-0.5)*20, vy: (Math.random()-1)*20, color: `hsl(${Math.random()*360}, 100%, 60%)`, size: Math.random()*8+5, life: 100 }); } updateConfetti(); }
         function updateConfetti() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach((p, i) => { p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.life--; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill(); if(p.life <= 0) particles.splice(i, 1); }); if(particles.length > 0) requestAnimationFrame(updateConfetti); }
+        document.addEventListener('mousemove', (e) => { const viewport = document.getElementById('game-viewport'); const x = (window.innerWidth/2 - e.pageX)/40; const y = (window.innerHeight/2 - e.pageY)/40; viewport.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`; });
 
-        document.addEventListener('mousemove', (e) => { const viewport = document.getElementById('game-viewport'); const x = (window.innerWidth/2 - e.pageX)/50; const y = (window.innerHeight/2 - e.pageY)/50; viewport.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`; });
-
-        // GAME LOGIC
-        let subConcepts = [], currentIdx = 0, score = 0, seconds = 0, timer, currentTopic = "", currentDifficulty = "", qStartTime = 0;
-        let mistakeLog = [];
+        let subConcepts = [], currentIdx = 0, score = 0, seconds = 0, timer, currentTopic = "", currentDifficulty = "", qStartTime = 0; let mistakeLog = [];
+        // 🆕 COMBO VARS
+        let streak = 0; let multiplier = 1;
 
         function clearErrors() { document.querySelectorAll('.error-msg').forEach(el => { el.style.display = 'none'; el.innerText = ''; }); }
         function showError(elementId, msg) { const el = document.getElementById(elementId); el.innerText = "⚠️ " + msg; el.style.display = 'block'; }
-        function showScorePopup(amount, color, element) { const popup = document.createElement("div"); popup.className = "score-popup"; popup.innerText = amount > 0 ? "+" + amount : amount; popup.style.color = color; popup.style.left = "50%"; popup.style.top = "0px"; element.appendChild(popup); setTimeout(() => popup.remove(), 1000); }
+        function showScorePopup(amount, color, element) { const popup = document.createElement("div"); popup.className = "score-popup"; popup.innerText = amount; popup.style.color = color; popup.style.left = "50%"; popup.style.top = "-20px"; element.appendChild(popup); setTimeout(() => popup.remove(), 1000); }
         document.addEventListener('click', (e) => { if(e.target.tagName === 'BUTTON' && !e.target.disabled && !e.target.classList.contains('speak-btn')) window.sfx.click(); });
 
-        window.switchView = function(id) { clearErrors(); document.querySelectorAll('.hud-panel').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; if(id === 'view-leaderboard') loadLeaderboard(); };
+        window.switchView = function(id) { 
+            clearErrors(); document.querySelectorAll('.hud-panel').forEach(p => { if(p.style.display !== 'none') { p.style.display = 'none'; } });
+            const target = document.getElementById(id); target.style.display = 'block';
+            if(id === 'view-leaderboard') loadLeaderboard();
+            if(id === 'view-menu') { 
+                // Reset to default space bg on menu
+                document.querySelector('.viewport').style.backgroundImage = "url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2070')";
+                document.querySelector('.viewport').className = "viewport"; // Remove combo effects
+            }
+        };
         window.startMathFlow = function() { const currentName = document.getElementById('player-name').value; if (currentName.trim() === "") { switchView('view-login'); } else { switchView('view-topics'); } };
         window.submitName = function() { const name = document.getElementById('intro-name').value; if (name.trim() === "") { showError('login-error', "Please enter a name!"); return; } document.getElementById('player-name').value = name; switchView('view-topics'); };
         window.saveSettings = function() { const name = document.getElementById('player-name').value; document.getElementById('intro-name').value = name; switchView('view-menu'); }
@@ -178,6 +224,15 @@
         window.enterMathRoom = async function(topic, level) {
             const name = document.getElementById('player-name').value; if(!name) { switchView('view-login'); return; }
             currentTopic = topic; currentDifficulty = level; currentIdx = 0; score = 0; seconds = 0; mistakeLog = [];
+            streak = 0; multiplier = 1; // 🆕 Reset Combo
+            updateComboUI();
+
+            // 🆕 DYNAMIC WORLDS
+            const vp = document.querySelector('.viewport');
+            if (topic === 'Addition') vp.style.backgroundImage = "url('https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&q=80&w=2000')"; // Underwater
+            else if (topic === 'Subtraction') vp.style.backgroundImage = "url('https://images.unsplash.com/photo-1564466988855-68098c4f0923?auto=format&fit=crop&q=80&w=2000')"; // Jungle
+            else vp.style.backgroundImage = "url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2070')"; // Space (Default)
+
             document.getElementById('display-score').innerText = "Score: 0"; document.getElementById('timer-display').innerText = "00:00"; document.getElementById('prog-fill').style.width = "0%"; document.getElementById('display-question').innerText = "Loading..."; document.getElementById('img-container').innerHTML = ""; document.getElementById('options-container').innerHTML = "";
             switchView('view-game');
             try { const q = query(collection(db, "MathTopics", topic, "Quizzes"), where("difficulty", "==", level)); const snap = await getDocs(q); subConcepts = snap.docs.map(d => d.data()); if (subConcepts.length > 0) { startTimer(); showQuestion(); } else { alert(`No ${level} questions found!`); switchView('view-topics'); } } catch (e) { alert("Error connecting to database."); switchView('view-menu'); }
@@ -187,7 +242,7 @@
 
         function showQuestion() {
             qStartTime = seconds; const sc = subConcepts[currentIdx]; document.getElementById('display-question').innerText = sc.question;
-            if(document.getElementById('auto-read').checked) setTimeout(() => window.speak(sc.question), 500);
+            if(document.getElementById('auto-read').checked) setTimeout(() => window.speak(sc.question), 600);
             const imgBox = document.getElementById('img-container'); imgBox.innerHTML = "";
             if (sc.imageUrl && sc.imageUrl.trim() !== "") { const img = document.createElement("img"); img.src = sc.imageUrl; img.className = "q-img"; img.onerror = function() { this.style.display = 'none'; }; imgBox.appendChild(img); }
             document.getElementById('prog-fill').style.width = (currentIdx / subConcepts.length * 100) + "%"; document.getElementById('hint-display').style.display = "none";
@@ -196,17 +251,60 @@
             choices.forEach(c => { const b = document.createElement('button'); b.className = "quiz-option"; b.innerText = c; b.onclick = () => check(c, sc.answer, b, sc.question); container.appendChild(b); });
         }
 
+        // 🆕 COMBO HELPER
+        function updateComboUI() {
+            const badge = document.getElementById('combo-badge');
+            const vp = document.querySelector('.viewport');
+            
+            if (streak >= 3) {
+                badge.style.display = 'block';
+                badge.innerText = streak >= 5 ? `🔥🔥 MAX STREAK (x3)!` : `🔥 Streak: ${streak} (x2)`;
+                if(streak >= 5) vp.className = "viewport combo-x3";
+                else vp.className = "viewport combo-x2";
+            } else {
+                badge.style.display = 'none';
+                vp.className = "viewport"; // Reset glow
+            }
+        }
+
         async function check(sel, cor, btn, questionText) {
             const allBtns = document.querySelectorAll('.quiz-option');
+            
             if (sel === cor) {
-                window.sfx.correct(); const praise = ["Great job!", "Awesome!", "Correct!"]; if(document.getElementById('auto-read').checked) window.speak(praise[Math.floor(Math.random() * praise.length)]);
-                allBtns.forEach(b => b.disabled = true); btn.style.background = "#27ae60"; 
-                const timeTaken = seconds - qStartTime; let points = 10, msg = "+10"; if (timeTaken <= 5) { points = 20; msg = "⚡ +20"; } else if (timeTaken <= 15) { points = 15; msg = "👍 +15"; }
-                score += points; showScorePopup(msg, "#2ecc71", btn); document.getElementById('display-score').innerText = "Score: " + score;
+                window.sfx.correct(); 
+                if(document.getElementById('auto-read').checked) window.speak(["Great job!", "Awesome!", "Correct!"][Math.floor(Math.random()*3)]);
+                
+                // 🆕 Update Streak
+                streak++;
+                if (streak >= 5) multiplier = 3;
+                else if (streak >= 3) multiplier = 2;
+                else multiplier = 1;
+                updateComboUI();
+
+                allBtns.forEach(b => b.disabled = true); 
+                btn.style.background = "linear-gradient(135deg, #27ae60, #2ecc71)"; btn.style.borderColor = "#2ecc71";
+                
+                const timeTaken = seconds - qStartTime; 
+                let basePoints = 10;
+                if (timeTaken <= 5) basePoints = 20; else if (timeTaken <= 15) basePoints = 15;
+                
+                let finalPoints = basePoints * multiplier;
+                let msg = `+${finalPoints}` + (multiplier > 1 ? ` (x${multiplier})` : "");
+                
+                score += finalPoints; 
+                showScorePopup(msg, "#2ecc71", btn); 
+                document.getElementById('display-score').innerText = "Score: " + score;
                 setTimeout(async () => { currentIdx++; if (currentIdx < subConcepts.length) showQuestion(); else await finishGame(); }, 1200);
+            
             } else {
-                window.sfx.wrong(); btn.style.background = "#c0392b"; document.getElementById('hint-display').innerText = "💡 Try again!"; document.getElementById('hint-display').style.display = "block";
-                mistakeLog.push({ q: questionText, wrong: sel, right: cor }); // 🆕 Log Mistake
+                window.sfx.wrong(); 
+                // 🆕 Combo Breaker
+                if (streak >= 3) window.sfx.fizz(); // Play fizz sound if losing a streak
+                streak = 0; multiplier = 1; updateComboUI();
+
+                btn.style.background = "linear-gradient(135deg, #c0392b, #e74c3c)"; btn.style.borderColor = "#e74c3c";
+                document.getElementById('hint-display').innerText = "💡 Try again!"; document.getElementById('hint-display').style.display = "block";
+                mistakeLog.push({ q: questionText, wrong: sel, right: cor });
                 if(score > 0) { score -= 5; if(score < 0) score = 0; showScorePopup("-5", "#e74c3c", btn); document.getElementById('display-score').innerText = "Score: " + score; }
                 btn.disabled = true; 
             }
@@ -214,38 +312,33 @@
 
         async function finishGame() {
             clearInterval(timer);
-            let maxPossible = subConcepts.length * 20; let stars = 1; let rank = "C (Keep Trying)";
-            if (score >= maxPossible * 0.8) { stars = 3; rank = "A (Superstar!)"; } else if (score >= maxPossible * 0.5) { stars = 2; rank = "B (Great Job!)"; }
+            // ... (rest of finishGame remains same)
+            let maxPossible = subConcepts.length * 60; // Approx max with combo
+            let stars = 1; let rank = "C (Explorer)";
+            // Adjusted logic for higher combo scores
+            if (score >= subConcepts.length * 20) { stars = 3; rank = "A (Galactic Master!)"; } 
+            else if (score >= subConcepts.length * 10) { stars = 2; rank = "B (Star Pilot!)"; }
             
             document.querySelectorAll('.star').forEach(s => s.classList.remove('earned'));
             setTimeout(() => { if(stars>=1) document.getElementById('star1').classList.add('earned'); }, 300);
             setTimeout(() => { if(stars>=2) document.getElementById('star2').classList.add('earned'); }, 600);
             setTimeout(() => { if(stars>=3) document.getElementById('star3').classList.add('earned'); }, 900);
-            document.getElementById('end-title').innerText = stars === 3 ? "Superstar! 🌟" : "Good Job! 👍";
+            document.getElementById('end-title').innerText = stars === 3 ? "Galactic Master! 🌟" : "Good Mission! 🚀";
             document.getElementById('final-score').innerText = score; document.getElementById('rank-display').innerText = "Rank: " + rank;
 
             const reviewBox = document.getElementById('mistake-review'); const reviewList = document.getElementById('mistake-list'); reviewList.innerHTML = "";
             if (mistakeLog.length > 0) { reviewBox.style.display = "block"; mistakeLog.forEach(m => { reviewList.innerHTML += `<div class="review-card"><div class="review-q">❓ ${m.q}</div><div class="review-ans"><span style="color:#e74c3c">❌ ${m.wrong}</span> | <span style="color:#2ecc71">✅ ${m.right}</span></div></div>`; }); } else { reviewBox.style.display = "none"; }
 
-            if(document.getElementById('auto-read').checked) window.speak(stars === 3 ? "Wow! You are a superstar!" : "Good job! You finished!");
+            if(document.getElementById('auto-read').checked) window.speak(stars === 3 ? "Wow! You are a galactic master!" : "Good mission! You finished!");
             if(stars === 3) { window.sfx.win(); startConfetti(); } else { window.sfx.correct(); }
 
-            // 🆕 SENDING MISTAKES TO CLOUD
-            await addDoc(collection(db, "StudentScores"), { 
-                studentName: document.getElementById('player-name').value, 
-                topic: currentTopic, 
-                difficulty: currentDifficulty, 
-                score: score, 
-                rank: rank, 
-                mistakes: mistakeLog, // 🆕 The Data Payload
-                timestamp: new Date() 
-            });
+            await addDoc(collection(db, "StudentScores"), { studentName: document.getElementById('player-name').value, topic: currentTopic, difficulty: currentDifficulty, score: score, rank: rank, mistakes: mistakeLog, timestamp: new Date() });
             switchView('view-summary');
         }
 
         async function loadLeaderboard() {
             const list = document.getElementById('leaderboard-list'); list.innerHTML = "Loading...";
-            try { const snap = await getDocs(query(collection(db, "StudentScores"), orderBy("score", "desc"))); list.innerHTML = ""; if(snap.empty) { list.innerHTML = "No scores yet. Be the first!"; return; } snap.forEach(d => { const s = d.data(); list.innerHTML += `<div style="border-bottom:1px solid #555; padding:8px;">⭐ ${s.studentName}: ${s.score} (${s.topic})</div>`; }); } catch(e) { list.innerHTML = "Error loading scores."; }
+            try { const snap = await getDocs(query(collection(db, "StudentScores"), orderBy("score", "desc"))); list.innerHTML = ""; if(snap.empty) { list.innerHTML = "No scores yet. Be the first!"; return; } snap.forEach(d => { const s = d.data(); list.innerHTML += `<div style="border-bottom:1px solid rgba(255,255,255,0.1); padding:10px; font-size:18px;">⭐ <b>${s.studentName}</b>: ${s.score} <span style="font-size:12px; opacity:0.7">(${s.topic})</span></div>`; }); } catch(e) { list.innerHTML = "Error loading scores."; }
         }
     </script>
 </body>
