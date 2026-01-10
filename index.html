@@ -153,25 +153,91 @@
         window.massPopulate = async function() {
             if(!confirm("This will add 12 sample questions to your database. Continue?")) return;
             
-            const samples = [
-                // ADDITION
-                { topic: "Addition", diff: "Easy", q: "1 + 1 = ?", a: "2", w: ["3", "1", "4"], h: "One finger plus another!", sc: "Basics" },
-                { topic: "Addition", diff: "Easy", q: "2 + 2 = ?", a: "4", w: ["2", "5", "3"], h: "Two steps and two more.", sc: "Basics" },
-                { topic: "Addition", diff: "Hard", q: "5 + 3 = ?", a: "8", w: ["7", "9", "6"], h: "Count up 3 from 5.", sc: "Adv" },
-                { topic: "Addition", diff: "Hard", q: "6 + 4 = ?", a: "10", w: ["9", "12", "8"], h: "Friends of ten!", sc: "Adv" },
-                
-                // SUBTRACTION
-                { topic: "Subtraction", diff: "Easy", q: "3 - 1 = ?", a: "2", w: ["1", "3", "0"], h: "Take one away.", sc: "Basics" },
-                { topic: "Subtraction", diff: "Easy", q: "5 - 0 = ?", a: "5", w: ["0", "4", "2"], h: "Taking away nothing!", sc: "Basics" },
-                { topic: "Subtraction", diff: "Hard", q: "10 - 5 = ?", a: "5", w: ["6", "4", "10"], h: "Half of ten.", sc: "Adv" },
-                { topic: "Subtraction", diff: "Hard", q: "8 - 3 = ?", a: "5", w: ["4", "6", "2"], h: "Count backwards: 7, 6, 5...", sc: "Adv" },
+const samples = [
+    // ============================
+    // ➕ ADDITION (Easy: 0-5)
+    // ============================
+    { topic: "Addition", diff: "Easy", q: "1 + 1 = ?", a: "2", w: ["1", "3", "4"], h: "One plus one.", sc: "Sums" },
+    { topic: "Addition", diff: "Easy", q: "2 + 1 = ?", a: "3", w: ["2", "4", "5"], h: "Count one more than two.", sc: "Sums" },
+    { topic: "Addition", diff: "Easy", q: "0 + 4 = ?", a: "4", w: ["0", "5", "3"], h: "Adding nothing changes nothing.", sc: "Zero Property" },
+    { topic: "Addition", diff: "Easy", q: "3 + 2 = ?", a: "5", w: ["4", "6", "1"], h: "Three fingers and two fingers.", sc: "Sums" },
+    { topic: "Addition", diff: "Easy", q: "2 + 2 = ?", a: "4", w: ["2", "3", "5"], h: "Double two.", sc: "Doubles" },
+    { topic: "Addition", diff: "Easy", q: "1 + 3 = ?", a: "4", w: ["3", "5", "2"], h: "One step after three.", sc: "Sums" },
+    { topic: "Addition", diff: "Easy", q: "5 + 0 = ?", a: "5", w: ["0", "6", "4"], h: "Five plus nothing.", sc: "Zero Property" },
+    { topic: "Addition", diff: "Easy", q: "1 + 2 = ?", a: "3", w: ["1", "4", "2"], h: "One, two, three!", sc: "Sums" },
+    { topic: "Addition", diff: "Easy", q: "1 + 4 = ?", a: "5", w: ["4", "6", "3"], h: "Count them all up.", sc: "Sums" },
+    { topic: "Addition", diff: "Easy", q: "0 + 2 = ?", a: "2", w: ["0", "3", "1"], h: "Just two.", sc: "Zero Property" },
 
-                // GEOMETRY (With Images)
-                { topic: "Geometry", diff: "Easy", q: "Which is a Circle?", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Circle_-_black_simple.svg/240px-Circle_-_black_simple.svg.png", a: "Circle", w: ["Square", "Triangle", "Star"], h: "Round like a ball.", sc: "Shapes" },
-                { topic: "Geometry", diff: "Easy", q: "I have 3 sides. What am I?", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Regular_triangle.svg/240px-Regular_triangle.svg.png", a: "Triangle", w: ["Circle", "Square", "Box"], h: "Like a pizza slice.", sc: "Shapes" },
-                { topic: "Geometry", diff: "Hard", q: "How many corners does a Square have?", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Square_-_black_simple.svg/240px-Square_-_black_simple.svg.png", a: "4", w: ["3", "5", "0"], h: "Count the pointy parts.", sc: "Attributes" },
-                { topic: "Geometry", diff: "Hard", q: "Which shape has NO corners?", a: "Circle", w: ["Square", "Triangle", "Star"], h: "It rolls endlessly.", sc: "Attributes" }
-            ];
+    // ============================
+    // ➕ ADDITION (Hard: 0-10)
+    // ============================
+    { topic: "Addition", diff: "Hard", q: "5 + 5 = ?", a: "10", w: ["9", "8", "11"], h: "High ten!", sc: "Doubles" },
+    { topic: "Addition", diff: "Hard", q: "3 + 4 = ?", a: "7", w: ["6", "8", "5"], h: "Double three plus one.", sc: "Sums" },
+    { topic: "Addition", diff: "Hard", q: "6 + 2 = ?", a: "8", w: ["7", "9", "6"], h: "Six, seven, eight.", sc: "Sums" },
+    { topic: "Addition", diff: "Hard", q: "2 + 7 = ?", a: "9", w: ["8", "10", "6"], h: "Almost ten.", sc: "Sums" },
+    { topic: "Addition", diff: "Hard", q: "4 + 4 = ?", a: "8", w: ["7", "9", "0"], h: "Spider legs count.", sc: "Doubles" },
+    { topic: "Addition", diff: "Hard", q: "1 + 9 = ?", a: "10", w: ["8", "9", "11"], h: "One more to make ten.", sc: "Making Ten" },
+    { topic: "Addition", diff: "Hard", q: "3 + 3 = ?", a: "6", w: ["5", "7", "4"], h: "Double three.", sc: "Doubles" },
+    { topic: "Addition", diff: "Hard", q: "8 + 1 = ?", a: "9", w: ["8", "7", "10"], h: "Just after eight.", sc: "Sums" },
+    { topic: "Addition", diff: "Hard", q: "5 + 2 = ?", a: "7", w: ["6", "8", "9"], h: "Five and two more.", sc: "Sums" },
+    { topic: "Addition", diff: "Hard", q: "6 + 3 = ?", a: "9", w: ["8", "7", "10"], h: "Count up three times.", sc: "Sums" },
+
+    // ============================
+    // ➖ SUBTRACTION (Easy: 0-5)
+    // ============================
+    { topic: "Subtraction", diff: "Easy", q: "5 - 1 = ?", a: "4", w: ["3", "5", "2"], h: "Take one away from five.", sc: "Simple Sub" },
+    { topic: "Subtraction", diff: "Easy", q: "3 - 2 = ?", a: "1", w: ["2", "3", "0"], h: "Three take away two.", sc: "Difference" },
+    { topic: "Subtraction", diff: "Easy", q: "2 - 2 = ?", a: "0", w: ["1", "2", "4"], h: "Take it all away!", sc: "Zero Result" },
+    { topic: "Subtraction", diff: "Easy", q: "4 - 1 = ?", a: "3", w: ["2", "4", "5"], h: "One less than four.", sc: "Simple Sub" },
+    { topic: "Subtraction", diff: "Easy", q: "5 - 0 = ?", a: "5", w: ["0", "4", "3"], h: "Don't take anything.", sc: "Zero Property" },
+    { topic: "Subtraction", diff: "Easy", q: "4 - 2 = ?", a: "2", w: ["1", "3", "4"], h: "Half of four.", sc: "Halves" },
+    { topic: "Subtraction", diff: "Easy", q: "3 - 0 = ?", a: "3", w: ["0", "2", "1"], h: "Stays the same.", sc: "Zero Property" },
+    { topic: "Subtraction", diff: "Easy", q: "2 - 1 = ?", a: "1", w: ["0", "2", "3"], h: "Two minus one.", sc: "Difference" },
+    { topic: "Subtraction", diff: "Easy", q: "5 - 4 = ?", a: "1", w: ["2", "0", "5"], h: "They are neighbors.", sc: "Difference" },
+    { topic: "Subtraction", diff: "Easy", q: "1 - 1 = ?", a: "0", w: ["1", "2", "3"], h: "One take away one.", sc: "Zero Result" },
+
+    // ============================
+    // ➖ SUBTRACTION (Hard: 0-10)
+    // ============================
+    { topic: "Subtraction", diff: "Hard", q: "10 - 5 = ?", a: "5", w: ["4", "6", "0"], h: "Five and five make ten.", sc: "Halves" },
+    { topic: "Subtraction", diff: "Hard", q: "9 - 2 = ?", a: "7", w: ["6", "8", "5"], h: "Count back two steps.", sc: "Difference" },
+    { topic: "Subtraction", diff: "Hard", q: "8 - 4 = ?", a: "4", w: ["3", "5", "2"], h: "Double four is eight.", sc: "Halves" },
+    { topic: "Subtraction", diff: "Hard", q: "7 - 3 = ?", a: "4", w: ["3", "5", "6"], h: "Seven fingers, hide three.", sc: "Difference" },
+    { topic: "Subtraction", diff: "Hard", q: "6 - 1 = ?", a: "5", w: ["4", "6", "7"], h: "Just one less.", sc: "Simple Sub" },
+    { topic: "Subtraction", diff: "Hard", q: "10 - 8 = ?", a: "2", w: ["1", "3", "8"], h: "Ten is two more than eight.", sc: "Difference" },
+    { topic: "Subtraction", diff: "Hard", q: "9 - 0 = ?", a: "9", w: ["0", "8", "10"], h: "Take nothing away.", sc: "Zero Property" },
+    { topic: "Subtraction", diff: "Hard", q: "8 - 5 = ?", a: "3", w: ["2", "4", "5"], h: "Five plus three is eight.", sc: "Difference" },
+    { topic: "Subtraction", diff: "Hard", q: "7 - 7 = ?", a: "0", w: ["7", "1", "14"], h: "Take everything away.", sc: "Zero Result" },
+    { topic: "Subtraction", diff: "Hard", q: "6 - 3 = ?", a: "3", w: ["2", "4", "9"], h: "Three and three make six.", sc: "Halves" },
+
+    // ============================
+    // 📐 GEOMETRY (Easy: Basics)
+    // ============================
+    { topic: "Geometry", diff: "Easy", q: "I have 3 sides. What am I?", a: "Triangle", w: ["Square", "Circle", "Star"], h: "Like a slice of pizza.", sc: "Shape ID" },
+    { topic: "Geometry", diff: "Easy", q: "Which shape has NO corners?", a: "Circle", w: ["Square", "Triangle", "Rectangle"], h: "It is round.", sc: "Shape ID" },
+    { topic: "Geometry", diff: "Easy", q: "I have 4 equal sides.", a: "Square", w: ["Triangle", "Circle", "Star"], h: "Like a box.", sc: "Shape ID" },
+    { topic: "Geometry", diff: "Easy", q: "How many corners does a Circle have?", a: "0", w: ["1", "4", "3"], h: "It is smooth all around.", sc: "Properties" },
+    { topic: "Geometry", diff: "Easy", q: "Which shape looks like a ball?", a: "Circle", w: ["Square", "Triangle", "Cube"], h: "It rolls.", sc: "Real World" },
+    { topic: "Geometry", diff: "Easy", q: "How many sides does a Triangle have?", a: "3", w: ["4", "2", "5"], h: "Tri means three.", sc: "Properties" },
+    { topic: "Geometry", diff: "Easy", q: "Which shape looks like a door?", a: "Rectangle", w: ["Circle", "Triangle", "Star"], h: "Two long sides, two short.", sc: "Real World" },
+    { topic: "Geometry", diff: "Easy", q: "Which shape has pointy corners?", a: "Triangle", w: ["Circle", "Oval", "Sphere"], h: "Watch out, it's sharp!", sc: "Properties" },
+    { topic: "Geometry", diff: "Easy", q: "How many corners does a Square have?", a: "4", w: ["3", "5", "0"], h: "One for each corner of a room.", sc: "Properties" },
+    { topic: "Geometry", diff: "Easy", q: "Is a Circle round?", a: "Yes", w: ["No", "Maybe", "Sometimes"], h: "It has no straight lines.", sc: "Properties" },
+
+    // ============================
+    // 📐 GEOMETRY (Hard: Attributes)
+    // ============================
+    { topic: "Geometry", diff: "Hard", q: "How many corners in 2 Squares?", a: "8", w: ["4", "6", "10"], h: "4 plus 4.", sc: "Counting" },
+    { topic: "Geometry", diff: "Hard", q: "I have 4 sides. 2 long, 2 short.", a: "Rectangle", w: ["Square", "Triangle", "Circle"], h: "Stretched out square.", sc: "Attributes" },
+    { topic: "Geometry", diff: "Hard", q: "How many sides in a Triangle + Square?", a: "7", w: ["6", "8", "5"], h: "3 plus 4.", sc: "Counting" },
+    { topic: "Geometry", diff: "Hard", q: "Which has MORE sides?", a: "Square", w: ["Triangle", "Circle", "They are equal"], h: "4 is bigger than 3.", sc: "Comparison" },
+    { topic: "Geometry", diff: "Hard", q: "Which has FEWER corners?", a: "Triangle", w: ["Square", "Rectangle", "Hexagon"], h: "3 is smaller than 4.", sc: "Comparison" },
+    { topic: "Geometry", diff: "Hard", q: "Shape with 5 corners?", a: "Pentagon", w: ["Square", "Triangle", "Circle"], h: "Like a house shape.", sc: "Advanced Shapes" },
+    { topic: "Geometry", diff: "Hard", q: "How many corners in 1 Square + 1 Circle?", a: "4", w: ["5", "0", "8"], h: "4 plus 0.", sc: "Counting" },
+    { topic: "Geometry", diff: "Hard", q: "What shape is a stop sign?", a: "Octagon", w: ["Hexagon", "Pentagon", "Square"], h: "It has 8 sides.", sc: "Real World" },
+    { topic: "Geometry", diff: "Hard", q: "Do parallel lines ever touch?", a: "No", w: ["Yes", "Sometimes", "Only on Tuesdays"], h: "Like train tracks.", sc: "Concepts" },
+    { topic: "Geometry", diff: "Hard", q: "Which shape has 6 sides?", a: "Hexagon", w: ["Pentagon", "Square", "Triangle"], h: "Hex means six.", sc: "Advanced Shapes" }
+];
 
             let count = 0;
             for(let item of samples) {
